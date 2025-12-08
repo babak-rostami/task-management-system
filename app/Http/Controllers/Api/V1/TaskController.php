@@ -34,6 +34,7 @@ class TaskController extends Controller
         $data['creator_id'] = $request->user()->id;
 
         $task = Task::create($data);
+        $task->users()->attach($request->user()->id);
 
         return new TaskResource($task);
     }

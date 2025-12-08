@@ -18,7 +18,7 @@ class TaskResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'status' => $this->status,
+            'status' => $this->when($this->status, fn() => $this->status),
             'completed_at' => $this->when(
                 $this->completed_at,
                 fn() => $this->completed_at->format('Y-m-d')

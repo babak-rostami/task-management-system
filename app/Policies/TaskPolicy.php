@@ -63,4 +63,19 @@ class TaskPolicy
     {
         return false;
     }
+
+    public function assignUser(User $user, Task $task): bool
+    {
+        return $user->id == $task->creator_id;
+    }
+
+    public function unassignUser(User $user, Task $task): bool
+    {
+        return $user->id == $task->creator_id;
+    }
+
+    public function viewUsers(User $user, Task $task): bool
+    {
+        return $user->id == $task->creator_id;
+    }
 }

@@ -11,7 +11,14 @@ class Task extends Model
 
     protected $casts = [
         'due_at' => 'datetime',
+        'completed_at' => 'datetime',
         'status' => TaskStatus::class,
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'task_user')->withTimestamps();
+    }
+
 
 }
