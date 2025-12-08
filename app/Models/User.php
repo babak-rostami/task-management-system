@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -48,9 +49,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function posts(): HasMany
+    public function tasks(): HasMany
     {
-        return $this->hasMany(Post::class, 'user_id');
+        return $this->hasMany(Task::class, 'creator_id');
     }
-
 }
