@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Task\TaskStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Task extends Model
 {
@@ -15,10 +16,9 @@ class Task extends Model
         'status' => TaskStatus::class,
     ];
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'task_user')->withTimestamps();
     }
-
 
 }

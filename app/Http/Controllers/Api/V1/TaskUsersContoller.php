@@ -7,13 +7,24 @@ use App\Http\Requests\UserTask\AddUserToTaskRequest;
 use App\Http\Requests\UserTask\RemoveUserFromTaskRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Task;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 
-class TaskUsersContoller extends Controller
+class TaskUsersContoller extends Controller implements HasMiddleware
 {
     use AuthorizesRequests;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:task.users', only: ['index']),
+            new Middleware('permission:assign.task.user', only: ['store']),
+            new Middleware('permission:unassign.task.user', only: ['destroy']),
+        ];
+    }
 
     public function index(Task $task)
     {
@@ -36,8 +47,7 @@ class TaskUsersContoller extends Controller
             ], 403);
         }
 
-        // Attach
-        $users->syncWithoutDetaching($request->user_id);
+        $users->attach($request->user_id);
 
         return response()->json([
             'message' => 'User added to task successfully.',
@@ -45,11 +55,11 @@ class TaskUsersContoller extends Controller
         ]);
     }
 
-    public function destroy(RemoveUserFromTaskRequest $request, Task $task)
+    public function destroy(Request $request, Task $task, $user_id)
     {
         $this->authorize('unassignUser', $task);
 
-        if ($request->user_id == $request->user()->id) {
+        if ($user_id == $request->user()->id) {
             return response()->json([
                 'error' => 'task creator cannot be deleted.',
             ], 403);
@@ -57,13 +67,13 @@ class TaskUsersContoller extends Controller
 
         $users = $task->users();
 
-        if (!$users->find($request->user_id)) {
+        if (!$users->find($user_id)) {
             return response()->json([
                 'error' => 'This user does not exist in this task.',
             ], 404);
         }
 
-        $users->detach($request->user_id);
+        $users->detach($user_id);
 
         return response()->json([
             'message' => 'User removed from task successfully.',
