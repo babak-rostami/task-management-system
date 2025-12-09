@@ -27,7 +27,7 @@ class TaskCacheService
     public function rememberUserTasks(User $user)
     {
         return cache()->remember($this->userTasksCacheKey($user->id), $this->ttl, function () use ($user) {
-            return $user->tasks()->paginate(10);
+            return $user->tasks()->paginate(5);
         });
     }
 
@@ -49,7 +49,7 @@ class TaskCacheService
     public function rememberAdminTasks()
     {
         return cache()->remember($this->adminTasksCacheKey(), $this->ttl, function () {
-            return Task::with('users')->paginate(2);
+            return Task::with('users')->paginate(5);
         });
     }
 

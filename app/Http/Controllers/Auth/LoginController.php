@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -20,21 +21,26 @@ class LoginController extends Controller
         $user = $request->user();
         $token = $user->createToken('main')->plainTextToken;
 
-        return [
-            'user' => new UserResource($user),
-            'token' => $token
-        ];
+        return ApiResponse::success(
+            data: [
+                'token' => $token
+            ],
+            message: 'You are logged in.',
+        );
+
     }
 
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request)
     {
         $user = $request->user();
 
         $user->currentAccessToken()->delete();
 
-        return response()->noContent();
+        return ApiResponse::success(
+            message: 'You are logged out.',
+        );
     }
 }
