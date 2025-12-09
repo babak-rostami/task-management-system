@@ -8,8 +8,11 @@ use App\Http\Requests\Task\StoreRequest;
 use App\Http\Requests\Task\UpdateRequest;
 use App\Http\Requests\Task\UpdateStatusRequest;
 use App\Http\Resources\TaskResource;
+use App\Http\Responses\ApiResponse;
 use App\Models\Task;
+use App\Services\Task\TaskCacheService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -18,6 +21,12 @@ class TaskController extends Controller implements HasMiddleware
 {
     use AuthorizesRequests;
 
+    private TaskCacheService $cacheService;
+
+    public function __construct(TaskCacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
     public static function middleware(): array
     {
         return [
@@ -34,64 +43,102 @@ class TaskController extends Controller implements HasMiddleware
     /**
      * Display User Tasks
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user = request()->user();
-        $tasks = $user->tasks()->paginate(10);
-        return TaskResource::collection($tasks);
+        $user = $request->user();
+
+        $search = $request->search;
+        $status = $request->status;
+        $page = $request->page ?? 1;
+
+        $hasFilter = $search || $status;
+
+        //if there is no filter and page == 1
+        if (!$hasFilter && $page == 1) {
+            $tasks = $this->cacheService->rememberUserTasks($user);
+            return ApiResponse::success(
+                data: TaskResource::collection($tasks)
+            );
+
+        }
+
+        //search and filters
+        $tasks = $user->tasks()->search($search)->filterStatus($status)->paginate(10);
+
+        return ApiResponse::collection(
+            resourceCollection: TaskResource::collection($tasks)
+        );
+
     }
 
     /**
      * Store a new task.
      */
-    public function store(StoreRequest $request): TaskResource
+    public function store(StoreRequest $request)
     {
-        $data = $request->validated();
-        $data['creator_id'] = $request->user()->id;
+        $task = Task::create([
+            ...$request->validated(),
+            'creator_id' => $request->user()->id,
+        ]);
 
-        $task = Task::create($data);
         $task->users()->attach($request->user()->id);
 
-        return new TaskResource($task);
+        $this->cacheService->clearTasksCache($task);
+
+        return ApiResponse::created(
+            data: new TaskResource($task),
+            message: 'Task created successfully.'
+        );
+
     }
 
     /**
      * show the specified task.
      */
-    public function show(Task $task): TaskResource
+    public function show(Task $task)
     {
         $this->authorize('view', $task);
 
-        return new TaskResource($task);
+        return ApiResponse::success(
+            data: new TaskResource($task)
+        );
     }
 
     /**
      * Update the specified task.
      */
-    public function update(UpdateRequest $request, Task $task): TaskResource
+    public function update(UpdateRequest $request, Task $task)
     {
         $this->authorize('update', $task);
 
-        $data = $request->validated();
+        $task->update($request->validated());
 
-        $task->update($data);
+        $this->cacheService->clearTasksCache($task);
 
-        return new TaskResource($task);
+        return ApiResponse::updated(
+            data: new TaskResource($task),
+            message: 'Task updated successfully.'
+        );
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified task.
      */
     public function destroy(Task $task)
     {
         $this->authorize('delete', $task);
 
+        $this->cacheService->clearTasksCache($task);
+
         $task->delete();
 
-        return response()->noContent();
+        return ApiResponse::deleted(
+            message: 'Task deleted successfully.'
+        );
     }
 
-    public function updateStatus(UpdateStatusRequest $request, Task $task): TaskResource
+    //update task status to complete or pending
+    public function updateStatus(UpdateStatusRequest $request, Task $task)
     {
         $this->authorize('updateStatus', $task);
 
@@ -99,23 +146,44 @@ class TaskController extends Controller implements HasMiddleware
 
         $task->status = $validated['status'];
 
-        //completed_at
-        $task->completed_at = $validated['status'] === TaskStatus::Completed->value
-            ? now()
-            : null;
+        //task completed_at
+        $task->completed_at = $validated['status'] === TaskStatus::Completed->value ? now() : null;
 
         $task->save();
 
-        return new TaskResource($task);
+        $this->cacheService->clearTasksCache($task);
+
+        return ApiResponse::updated(
+            data: new TaskResource($task),
+            message: 'Task status updated successfully.'
+        );
     }
 
     /**
-     * get all tasks
+     * get all tasks for admin
      */
-    public function indexAdmin()
+    public function indexAdmin(Request $request)
     {
-        $tasks = Task::paginate(10);
-        return TaskResource::collection($tasks);
+        $search = $request->search;
+        $status = $request->status;
+        $page = $request->page ?? 1;
+
+        $hasFilter = $search || $status;
+
+        if (!$hasFilter && $page == 1) {
+            $tasks = $this->cacheService->rememberAdminTasks();
+            return ApiResponse::success(
+                data: TaskResource::collection($tasks)
+            );
+        }
+
+        //search and filters
+        $tasks = Task::search($search)->filterStatus($status)->paginate(10);
+
+        return ApiResponse::collection(
+            resourceCollection: TaskResource::collection($tasks)
+        );
+
     }
 
 }

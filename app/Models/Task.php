@@ -21,4 +21,26 @@ class Task extends Model
         return $this->belongsToMany(User::class, 'task_user')->withTimestamps();
     }
 
+
+    // Search Scope
+    public function scopeSearch($query, $search)
+    {
+        if (!$search)
+            return $query;
+
+        return $query->where(function ($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        });
+    }
+
+    // Status Scope
+    public function scopeFilterStatus($query, $status)
+    {
+        if (!$status)
+            return $query;
+
+        return $query->where('status', $status);
+    }
+
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\TaskUsersContoller;
 use Illuminate\Http\Request;
