@@ -10,12 +10,13 @@ Includes RESTful APIs for managing tasks and users.
 git clone https://github.com/babak-rostami/task-management-system.git
 cd task-management-system
 cp .env.example .env
-php artisan key:generate
 docker-compose up -d --build
 docker exec -it task_management_app bash
 composer install
+php artisan key:generate
 php artisan migrate --seed
 ```
+
 After these steps, the app is ready.
 
 Some demo tasks and users are already added to the database by **seeder**.
@@ -32,8 +33,8 @@ Download it here:
 
 Import it into Postman and start testing the API right away.
 
-
 # 🔐 Authentication
+
 When you are logged out, you cannot use the task management features.
 
 So first, register a new account:
@@ -50,6 +51,7 @@ POST: http://localhost:8000/api/register
   "password_confirmation": "password"
 }
 ```
+
 ## Login
 
 ```
@@ -66,6 +68,7 @@ You will receive a token in the response.
 You must add this token to the Authorization header to stay logged in.
 
 ## Example response:
+
 ```
 {
   "status": true,
@@ -75,35 +78,36 @@ You must add this token to the Authorization header to stay logged in.
   }
 }
 ```
+
 ## ✔ What a logged-in user can do
 
-- You can create a new task and manage it.  
-  `POST /api/v1/tasks`
+-   You can create a new task and manage it.  
+    `POST /api/v1/tasks`
 
 ### 👑 Task Owner
 
 Only the user who created the task can:
 
-- Add users to the task  
-  `POST /api/v1/tasks/{task}/users`
-- Remove users from the task  
-  `DELETE /api/v1/tasks/{task}/users/{user}`
+-   Add users to the task  
+    `POST /api/v1/tasks/{task}/users`
+-   Remove users from the task  
+    `DELETE /api/v1/tasks/{task}/users/{user}`
 
 ### 👥 Task Member
 
 Users who are added to a task can:
 
-- Change the **status** of the task  
-   `POST /api/v1/tasks/{task}/status`
-- See other users who are members of the same task  
-  `GET /api/v1/tasks/{task}/users`
+-   Change the **status** of the task  
+     `POST /api/v1/tasks/{task}/status`
+-   See other users who are members of the same task  
+    `GET /api/v1/tasks/{task}/users`
 
 ### 🚫 No Access for Non-Members
 
 If a user is **not** a member of a task:
 
-- They cannot see the task  
-- They cannot see the users inside the task
+-   They cannot see the task
+-   They cannot see the users inside the task
 
 # 🔐 TaskPolicy
 
@@ -119,11 +123,13 @@ Before doing anything, you must run:
 ```bash
 php artisan db:seed
 ```
+
 This will run the RolePermissionSeeder, which creates all roles and permissions.
 
 We have two roles:
-- Admin
-- User
+
+-   Admin
+-   User
 
 When someone registers, they automatically get the User role and can only use the actions allowed for normal users.
 
@@ -134,6 +140,7 @@ To create an admin user, run:
 ```bash
 php artisan make:admin
 ```
+
 This command will ask for an email and password.
 
 If the user already exists, the admin role will be added to that user.
@@ -179,15 +186,14 @@ Every driver must **implement `LogInterface`**.
 
 Right now, we have two drivers:
 
-- **FileLogger** – writes logs to a file  
-- **DatabaseLogger** – saves logs in the database  
+-   **FileLogger** – writes logs to a file
+-   **DatabaseLogger** – saves logs in the database
 
 In the **LogManager**, we choose which drivers are active.  
 We can also enable multiple drivers at the same time, so one log event can be saved in different places.
 
 We use the log service in different parts of the app—when an error happens, when some data changes, or when something is deleted.  
 This keeps our logging simple, clear, and easy to expand later.
-
 
 # 🙌 Thank You
 
