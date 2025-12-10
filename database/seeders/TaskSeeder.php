@@ -2,19 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Task;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class UserSeeder extends Seeder
+class TaskSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        if (User::count() < 10) {
-            User::factory()->count(20)->create();
+        if (Task::count() < 20) {
+            Task::factory(40)->create();
         }
     }
 }

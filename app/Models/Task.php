@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Enums\Task\TaskStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Task extends Model
 {
+    use HasFactory;
     protected $fillable = ['title', 'description', 'due_at', 'creator_id', 'status', 'completed_at'];
 
     protected $casts = [
@@ -21,8 +23,6 @@ class Task extends Model
         return $this->belongsToMany(User::class, 'task_user')->withTimestamps();
     }
 
-
-    // Search Scope
     public function scopeSearch($query, $search)
     {
         if (!$search)
@@ -34,7 +34,6 @@ class Task extends Model
         });
     }
 
-    // Status Scope
     public function scopeFilterStatus($query, $status)
     {
         if (!$status)

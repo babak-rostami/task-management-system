@@ -25,7 +25,7 @@ class LoginController extends Controller
             data: [
                 'token' => $token
             ],
-            message: 'You are logged in.',
+            message: 'Use this Token...',
         );
 
     }

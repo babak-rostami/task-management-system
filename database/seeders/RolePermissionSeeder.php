@@ -64,7 +64,7 @@ class RolePermissionSeeder extends Seeder
             'update.task.status',
             'assign.task.user',
             'unassign.task.user',
-            'task.users',
+            'task.users'
         ];
         $adminPermNames = array_merge($userPermNames, ['all.tasks']);
 

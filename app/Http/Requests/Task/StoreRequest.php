@@ -14,6 +14,14 @@ class StoreRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'title' => strip_tags($this->title),
+            'description' => strip_tags($this->description),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -38,7 +46,7 @@ class StoreRequest extends FormRequest
             'description.required' => 'task description is required',
             'description.string' => 'task description must be string',
             'description.min' => 'task description must be at least :min chars',
-            
+
             'due_at.required' => 'task due_at is required',
             'due_at.date' => 'task due_at must be date format',
         ];

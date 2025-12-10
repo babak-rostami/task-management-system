@@ -2,12 +2,8 @@
 
 use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\TaskUsersContoller;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
 require __DIR__ . '/auth.php';
 
@@ -20,5 +16,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
         Route::apiResource('tasks/{task:id}/users', TaskUsersContoller::class)
             ->except(['show', 'update']);
+
+        Route::get('users', [UserController::class, 'index']);
     });
 });

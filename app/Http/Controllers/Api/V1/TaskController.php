@@ -60,8 +60,8 @@ class TaskController extends Controller implements HasMiddleware
         if (!$hasFilter && $page == 1) {
             $tasks = $this->cacheService->rememberUserTasks($user);
 
-            return ApiResponse::success(
-                data: TaskResource::collection($tasks)
+            return ApiResponse::collection(
+                resourceCollection: TaskResource::collection($tasks)
             );
 
         }
@@ -114,7 +114,6 @@ class TaskController extends Controller implements HasMiddleware
         }
     }
 
-
     /**
      * show the specified task.
      */
@@ -132,9 +131,8 @@ class TaskController extends Controller implements HasMiddleware
      */
     public function update(UpdateRequest $request, Task $task)
     {
+        $this->authorize('update', $task);
         try {
-            $this->authorize('update', $task);
-
             $task->update($request->validated());
 
             $this->cacheService->clearTasksCache($task);
@@ -170,9 +168,8 @@ class TaskController extends Controller implements HasMiddleware
     public function destroy(Request $request, Task $task)
     {
         $user = $request->user();
+        $this->authorize('delete', $task);
         try {
-            $this->authorize('delete', $task);
-
             $this->cacheService->clearTasksCache($task);
 
             $task->delete();
@@ -205,9 +202,8 @@ class TaskController extends Controller implements HasMiddleware
     //update task status to complete or pending
     public function updateStatus(UpdateStatusRequest $request, Task $task)
     {
+        $this->authorize('updateStatus', $task);
         try {
-            $this->authorize('updateStatus', $task);
-
             $validated = $request->validated();
 
             $task->status = $validated['status'];

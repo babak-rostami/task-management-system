@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserTask\AddUserToTaskRequest;
-use App\Http\Requests\UserTask\RemoveUserFromTaskRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\Task;
@@ -14,7 +13,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Cache;
 
 class TaskUsersContoller extends Controller implements HasMiddleware
 {
@@ -37,11 +35,11 @@ class TaskUsersContoller extends Controller implements HasMiddleware
         ];
     }
 
+    //get task users
     public function index(Task $task)
     {
+        $this->authorize('viewUsers', $task);
         try {
-            $this->authorize('viewUsers', $task);
-
             $users = $this->cacheService->rememberTaskUsers($task);
 
             return ApiResponse::collection(
@@ -61,12 +59,11 @@ class TaskUsersContoller extends Controller implements HasMiddleware
         }
     }
 
-
+    //assign user to task
     public function store(AddUserToTaskRequest $request, Task $task)
     {
+        $this->authorize('assignUser', $task);
         try {
-            $this->authorize('assignUser', $task);
-
             $users = $task->users();
 
             if ($users->find($request->user_id)) {
@@ -106,12 +103,11 @@ class TaskUsersContoller extends Controller implements HasMiddleware
         }
     }
 
-
+    //remove user from task
     public function destroy(Request $request, Task $task, $user_id)
     {
+        $this->authorize('unassignUser', $task);
         try {
-            $this->authorize('unassignUser', $task);
-
             if ($user_id == $request->user()->id) {
                 return ApiResponse::error(
                     message: 'Task creator cannot be deleted.',

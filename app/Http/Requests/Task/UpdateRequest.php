@@ -14,6 +14,14 @@ class UpdateRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'title' => strip_tags($this->title),
+            'description' => strip_tags($this->description),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
