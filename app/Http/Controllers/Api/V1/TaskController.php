@@ -121,8 +121,8 @@ class TaskController extends Controller implements HasMiddleware
     {
         $this->authorize('view', $task);
 
-        return ApiResponse::success(
-            data: new TaskResource($task->load('users'))
+        return ApiResponse::collection(
+            resourceCollection: new TaskResource($task->load('users'))
         );
     }
 

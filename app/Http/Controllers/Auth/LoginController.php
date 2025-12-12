@@ -27,7 +27,6 @@ class LoginController extends Controller
             ],
             message: 'Use this Token...',
         );
-
     }
 
     /**

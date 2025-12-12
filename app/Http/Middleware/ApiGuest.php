@@ -19,7 +19,7 @@ class ApiGuest
         if (Auth::guard($guard)->check()) {
             return response()->json([
                 'message' => 'Already authenticated.'
-            ], 400);
+            ], status: 409);
         }
 
         return $next($request);
