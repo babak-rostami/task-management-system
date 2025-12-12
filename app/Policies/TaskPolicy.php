@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\Task;
+use App\Models\TaskUser;
 
 class TaskPolicy
 {
@@ -53,11 +54,11 @@ class TaskPolicy
         return $this->belongsToTask($user, $task);
     }
 
-
     // Helpers
     private function belongsToTask(User $user, Task $task): bool
     {
-        return $task->users()->where('users.id', $user->id)->exists();
+        return TaskUser::where('task_id', $task->id)
+            ->where('user_id', $user->id)->exists();
     }
 
     private function isCreator(User $user, Task $task): bool
