@@ -1,4 +1,4 @@
-# Task Management System (Laravel + PostgreSQL + Redis + Docker)
+# Task Management System (Laravel + PostgreSQL + Redis + Docker + Pest)
 
 Task Management System built with Laravel
 featuring role-based permissions, PostgreSQL, Redis caching, and containerized using Docker.
