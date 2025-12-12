@@ -3,8 +3,6 @@
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
-use function Pest\Laravel\actingAs;
-use function Pest\Laravel\assertGuest;
 use function Pest\Laravel\postJson;
 
 test('users can login and receive a sanctum token', function () {

@@ -195,6 +195,24 @@ We can also enable multiple drivers at the same time, so one log event can be sa
 We use the log service in different parts of the app—when an error happens, when some data changes, or when something is deleted.  
 This keeps our logging simple, clear, and easy to expand later.
 
+# 🧪Testing: Pest
+This project also includes a test using Pest - testing framework for Laravel.
+
+These tests help make sure everything works correctly when the project grows
+
+-   **when packages are updated**
+-   **new features are added**
+-   **existing code changes**
+-   **prevent unexpected bugs**
+
+They also make it easier for new developers to understand how the system behaves, since the tests clearly show what each part of the application is expected to do.
+
+You can run all tests with:
+
+`php artisan test`
+
+---
+
 # 🙌 Thank You
 
 Thank you for checking out this project.  
