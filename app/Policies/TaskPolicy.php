@@ -29,13 +29,13 @@ class TaskPolicy
         return $this->isCreator($user, $task);
     }
 
-    //only task create can assignUser new user
+    //only task creator can assignUser new user
     public function assignUser(User $user, Task $task): bool
     {
         return $this->isCreator($user, $task);
     }
 
-    //only task create can unassignUser user
+    //only task creator can unassignUser user
     public function unassignUser(User $user, Task $task): bool
     {
         return $this->isCreator($user, $task);
