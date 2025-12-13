@@ -20,12 +20,9 @@ beforeEach(function () {
     $this->user = User::factory()->create();
     $this->user->givePermissionTo('my.tasks');
 
-    // Mock external services
+    // Mock cache services
     $this->cacheMock = Mockery::mock(TaskCacheService::class);
-    $this->loggerMock = Mockery::mock(LogInterface::class);
-
     app()->instance(TaskCacheService::class, $this->cacheMock);
-    app()->instance(LogInterface::class, $this->loggerMock);
 });
 
 /**
@@ -99,4 +96,28 @@ it('does not use cache when page is not 1', function () {
         ->assertJsonStructure([
             'data'
         ]);
+});
+
+/**
+ * user without permission
+ */
+it('user can not access task index without my.tasks permission', function () {
+
+    $user = User::factory()->create();
+
+    Sanctum::actingAs($user);
+
+    $response = getJson('/api/v1/tasks');
+
+    $response->assertStatus(403);
+});
+
+/**
+ * cannot access without login
+ */
+it('user who is not logged in cannot access task index', function () {
+
+    $response = getJson('/api/v1/tasks');
+
+    $response->assertStatus(401);
 });
