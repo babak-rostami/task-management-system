@@ -43,7 +43,7 @@ function validTaskPayload(): array
 /**
  * Successful task creation
  */
-it('creates a task successfully', function () {
+test('creates a task successfully', function () {
 
     Sanctum::actingAs($this->user);
 
@@ -73,7 +73,7 @@ it('creates a task successfully', function () {
 /**
  * User without permission cannot create task
  */
-it('does not allow creating task without permission', function () {
+test('does not allow creating task without permission', function () {
 
     $user = User::factory()->create();
 
@@ -87,7 +87,7 @@ it('does not allow creating task without permission', function () {
 /**
  * Guest user cannot create task
  */
-it('does not allow guest to create task', function () {
+test('does not allow guest to create task', function () {
 
     $response = postJson('/api/v1/tasks', validTaskPayload());
 
@@ -97,7 +97,7 @@ it('does not allow guest to create task', function () {
 /**
  * Validation errors title
  */
-it('returns validation error when title is missing', function () {
+test('returns validation error when title is missing', function () {
 
     Sanctum::actingAs($this->user);
 
@@ -112,7 +112,7 @@ it('returns validation error when title is missing', function () {
 /**
  * Validation errors description
  */
-it('returns validation error when description is missing', function () {
+test('returns validation error when description is missing', function () {
 
     Sanctum::actingAs($this->user);
 
@@ -127,7 +127,7 @@ it('returns validation error when description is missing', function () {
 /**
  * Validation errors due_at
  */
-it('returns validation error when due_at is missing', function () {
+test('returns validation error when due_at is missing', function () {
 
     Sanctum::actingAs($this->user);
 
@@ -142,7 +142,7 @@ it('returns validation error when due_at is missing', function () {
 /**
  * during task creation error
  */
-it('when exception happens during task creation', function () {
+test('when exception happens during task creation', function () {
 
     Sanctum::actingAs($this->user);
 

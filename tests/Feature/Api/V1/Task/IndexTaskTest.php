@@ -28,7 +28,7 @@ beforeEach(function () {
 /**
  * page=1 and no filters → cache SHOULD be used
  */
-it('uses cache when page is 1 and no filters', function () {
+test('uses cache when page is 1 and no filters', function () {
 
     Sanctum::actingAs($this->user);
 
@@ -50,7 +50,7 @@ it('uses cache when page is 1 and no filters', function () {
 /**
  * search filter applied → cache should NOT be used
  */
-it('does not use cache when search filter is applied', function () {
+test('does not use cache when search filter is applied', function () {
 
     $this->cacheMock->shouldReceive('rememberUserTasks')->never();
 
@@ -67,7 +67,7 @@ it('does not use cache when search filter is applied', function () {
 /**
  * status filter applied → cache should NOT be used
  */
-it('does not use cache when status filter is applied', function () {
+test('does not use cache when status filter is applied', function () {
 
     $this->cacheMock->shouldReceive('rememberUserTasks')->never();
 
@@ -84,7 +84,7 @@ it('does not use cache when status filter is applied', function () {
 /**
  * page != 1 → cache should NOT be used
  */
-it('does not use cache when page is not 1', function () {
+test('does not use cache when page is not 1', function () {
 
     $this->cacheMock->shouldReceive('rememberUserTasks')->never();
 
@@ -101,7 +101,7 @@ it('does not use cache when page is not 1', function () {
 /**
  * user without permission
  */
-it('user can not access task index without my.tasks permission', function () {
+test('user can not access task index without my.tasks permission', function () {
 
     $user = User::factory()->create();
 
@@ -115,7 +115,7 @@ it('user can not access task index without my.tasks permission', function () {
 /**
  * cannot access without login
  */
-it('user who is not logged in cannot access task index', function () {
+test('user who is not logged in cannot access task index', function () {
 
     $response = getJson('/api/v1/tasks');
 
